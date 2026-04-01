@@ -3,73 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDRS-insurance | Claims Estimator</title>
-    
-    <meta property="og:title" content="BDRS-insurance Claims Estimator">
-    <meta property="og:description" content="Official repair cost calculator for Philippine insurance claims.">
-    <meta property="og:url" content="https://BDRS-insurance.github.io/Claims-info/">
-    
+    <title>BDRS-insurance | Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .animate-fade { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        /* Print Styles: Hide navigation and buttons when printing */
+        @media print {
+            body { background-color: white; }
+            .no-print { display: none !important; }
+            .print-full { width: 100% !important; max-width: none !important; box-shadow: none !important; border: none !important; }
+            .tab-content { display: none; }
+            .tab-content.active { display: block !important; }
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen flex items-center justify-center p-4">
+<body class="text-slate-800 pb-20">
 
-    <div class="max-w-md w-full bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200">
-        <div class="bg-blue-800 p-8 text-white text-center">
-            <h1 class="text-2xl font-black tracking-tight uppercase">BDRS Insurance</h1>
-            <div class="inline-block bg-blue-600 text-[10px] px-3 py-1 rounded-full mt-2 font-bold tracking-widest">
-                CLAIMS ESTIMATOR v1.0
+    <nav class="bg-blue-900 text-white shadow-md sticky top-0 z-50 no-print">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="font-black text-xl tracking-tight uppercase">BDRS Insurance</div>
+            <button onclick="window.print()" class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                PRINT
+            </button>
+        </div>
+        <div class="flex overflow-x-auto max-w-4xl mx-auto px-2 text-sm font-semibold">
+            <button onclick="switchTab('tab-claims')" id="btn-claims" class="tab-btn flex-1 py-3 border-b-4 border-blue-400 text-blue-100 whitespace-nowrap">🛠️ Claims Estimate</button>
+            <button onclick="switchTab('tab-motor')" id="btn-motor" class="tab-btn flex-1 py-3 border-b-4 border-transparent text-blue-300 hover:text-white whitespace-nowrap">🚗 Motor Quote</button>
+            <button onclick="switchTab('tab-fire')" id="btn-fire" class="tab-btn flex-1 py-3 border-b-4 border-transparent text-blue-300 hover:text-white whitespace-nowrap">🏠 Fire Quote</button>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto mt-6 px-4 print-full">
+
+        <div id="tab-claims" class="tab-content active bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden print-full">
+            <div class="bg-slate-100 p-4 border-b border-slate-200 text-center">
+                <h2 class="font-black text-lg uppercase text-slate-700">Repair Claims Estimator</h2>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4 no-print">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Labor Hours (₱650/hr)</label>
+                        <input type="number" id="c-hours" value="0" class="w-full bg-slate-50 border p-3 rounded-lg font-bold" oninput="calcClaim()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Panels to Paint (₱4,500/panel)</label>
+                        <input type="number" id="c-panels" value="0" class="w-full bg-slate-50 border p-3 rounded-lg font-bold" oninput="calcClaim()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Extra Parts Total (₱)</label>
+                        <input type="number" id="c-parts" value="0" class="w-full bg-slate-50 border p-3 rounded-lg font-bold text-blue-600" oninput="calcClaim()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-red-500 mb-1">Participation Fee (₱)</label>
+                        <input type="number" id="c-deduct" value="3000" class="w-full bg-red-50 border border-red-200 p-3 rounded-lg font-bold text-red-600" oninput="calcClaim()">
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 flex flex-col justify-center">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">Claim Summary</h3>
+                    <div class="space-y-2 text-sm mb-6">
+                        <div class="flex justify-between"><span>Labor Cost:</span><span id="cr-labor" class="font-bold">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Painting Cost:</span><span id="cr-paint" class="font-bold">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Parts Cost:</span><span id="cr-parts" class="font-bold">₱0.00</span></div>
+                        <div class="flex justify-between text-red-500"><span>Less Deductible:</span><span id="cr-deduct" class="font-bold">-₱3,000.00</span></div>
+                    </div>
+                    <div class="bg-blue-900 text-white p-4 rounded-xl text-center shadow-inner">
+                        <p class="text-[10px] uppercase tracking-widest mb-1 text-blue-300">Net Claim Payable</p>
+                        <h2 id="cr-total" class="text-3xl font-black">₱0.00</h2>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="p-6 space-y-5">
-            <div class="flex justify-between items-center text-sm border-b pb-4">
-                <span class="text-slate-500 font-medium italic">Latest Market Rates:</span>
-                <span id="update-date" class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold underline">Loading...</span>
+        <div id="tab-motor" class="tab-content bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden print-full">
+            <div class="bg-slate-100 p-4 border-b border-slate-200 text-center">
+                <h2 class="font-black text-lg uppercase text-slate-700">Motorcar Insurance Quotation</h2>
+                <p class="text-[10px] text-slate-500 uppercase">Based on standard IC Tariff Rates (Private Car)</p>
             </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-1">Labor Time (Hours)</label>
-                    <input type="number" id="input-hours" value="1" min="0" 
-                        class="w-full bg-slate-50 border-2 border-slate-200 p-3 rounded-xl focus:border-blue-500 focus:ring-0 outline-none transition font-semibold text-lg">
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4 no-print">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Vehicle Details (Year/Make/Model)</label>
+                        <input type="text" placeholder="e.g. 2024 Toyota Vios 1.3" class="w-full bg-slate-50 border p-3 rounded-lg font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Fair Market Value (FMV) - ₱</label>
+                        <input type="number" id="m-fmv" value="800000" class="w-full bg-slate-50 border p-3 rounded-lg font-bold text-blue-700" oninput="calcMotor()">
+                    </div>
+                    <div class="flex items-center gap-2 bg-blue-50 p-3 rounded-lg border border-blue-100 mt-2">
+                        <input type="checkbox" id="m-aon" checked class="w-5 h-5 accent-blue-600" onchange="calcMotor()">
+                        <label class="text-sm font-bold text-blue-900">Include Acts of Nature (AON / Flood)</label>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">AON Rate (%)</label>
+                            <input type="number" id="m-aon-rate" value="0.50" step="0.05" class="w-full bg-slate-50 border p-2 rounded-lg font-bold" oninput="calcMotor()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Basic OD/Theft Rate (%)</label>
+                            <input type="number" id="m-od-rate" value="1.50" step="0.05" class="w-full bg-slate-50 border p-2 rounded-lg font-bold" oninput="calcMotor()">
+                        </div>
+                    </div>
                 </div>
+                
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">Premium Breakdown</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between"><span>Own Damage / Theft:</span><span id="mr-od" class="font-semibold">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Acts of Nature (AON):</span><span id="mr-aon" class="font-semibold">₱0.00</span></div>
+                        <div class="flex justify-between text-slate-500 text-xs"><span>VTPL - Bodily Injury (Standard):</span><span>₱530.00</span></div>
+                        <div class="flex justify-between text-slate-500 text-xs"><span>VTPL - Property Damage (Standard):</span><span>₱1,050.00</span></div>
+                        <div class="flex justify-between text-slate-500 text-xs"><span>Auto Personal Accident (Standard):</span><span>₱500.00</span></div>
+                    </div>
+                    
+                    <div class="border-t border-slate-200 mt-4 pt-4 space-y-1 text-xs text-slate-500">
+                        <div class="flex justify-between font-bold text-slate-700 text-sm mb-2"><span>Net Premium:</span><span id="mr-net">₱0.00</span></div>
+                        <div class="flex justify-between"><span>VAT (12%):</span><span id="mr-vat">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Doc Stamp Tax (12.5%):</span><span id="mr-dst">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Local Gov Tax (0.2%):</span><span id="mr-lgt">₱0.00</span></div>
+                    </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-1">Number of Panels (Paint)</label>
-                    <input type="number" id="input-panels" value="0" min="0" 
-                        class="w-full bg-slate-50 border-2 border-slate-200 p-3 rounded-xl focus:border-blue-500 focus:ring-0 outline-none transition font-semibold text-lg">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1 ml-1">Participation Fee (Deductible)</label>
-                    <input type="number" id="input-deductible" value="3000" min="0" 
-                        class="w-full bg-slate-50 border-2 border-slate-200 p-3 rounded-xl focus:border-blue-500 focus:ring-0 outline-none transition font-semibold text-lg text-red-600">
+                    <div class="mt-4 bg-green-50 text-green-900 p-4 rounded-xl text-center border border-green-200">
+                        <p class="text-[10px] uppercase font-bold tracking-widest mb-1 text-green-700">Gross Premium (Total Due)</p>
+                        <h2 id="mr-total" class="text-2xl font-black">₱0.00</h2>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <button onclick="calculateClaim()" 
-                class="w-full bg-blue-700 hover:bg-blue-800 text-white font-black py-4 rounded-2xl shadow-lg transition-all active:scale-95 text-lg">
-                GENERATE ESTIMATE
-            </button>
+        <div id="tab-fire" class="tab-content bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden print-full">
+            <div class="bg-slate-100 p-4 border-b border-slate-200 text-center">
+                <h2 class="font-black text-lg uppercase text-slate-700">Fire & Property Quotation</h2>
+                <p class="text-[10px] text-slate-500 uppercase">Based on standard IC Tariff Rates</p>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-4 no-print">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Property Location / Name</label>
+                        <input type="text" placeholder="e.g. Makati Residential House" class="w-full bg-slate-50 border p-3 rounded-lg font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Total Sum Insured (Building & Contents) - ₱</label>
+                        <input type="number" id="f-tsi" value="5000000" class="w-full bg-slate-50 border p-3 rounded-lg font-bold text-orange-600" oninput="calcFire()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Construction Type (Affects Base Rate)</label>
+                        <select id="f-rate" class="w-full bg-slate-50 border p-3 rounded-lg font-bold" onchange="calcFire()">
+                            <option value="0.10">Concrete / Class A (0.10%)</option>
+                            <option value="0.25">Semi-Concrete (0.25%)</option>
+                            <option value="0.50">Wood / Light Materials (0.50%)</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2 mt-4 border border-slate-200 p-3 rounded-lg bg-slate-50">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Include Allied Perils:</span>
+                        <label class="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" id="f-eq" checked class="w-4 h-4 accent-orange-500" onchange="calcFire()"> Earthquake (0.10% or 0.15%)</label>
+                        <label class="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" id="f-tyfl" checked class="w-4 h-4 accent-orange-500" onchange="calcFire()"> Typhoon & Flood (0.10%)</label>
+                        <label class="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" id="f-rsm" checked class="w-4 h-4 accent-orange-500" onchange="calcFire()"> Riot, Strike, Malicious Damage (0.01%)</label>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 border-b pb-2">Premium Breakdown</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between"><span>Basic Fire & Lightning:</span><span id="fr-fire" class="font-semibold">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Earthquake Shock:</span><span id="fr-eq" class="font-semibold">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Typhoon & Flood:</span><span id="fr-tyfl" class="font-semibold">₱0.00</span></div>
+                        <div class="flex justify-between"><span>RSMD / Ext. Cover:</span><span id="fr-rsm" class="font-semibold">₱0.00</span></div>
+                    </div>
+                    
+                    <div class="border-t border-slate-200 mt-4 pt-4 space-y-1 text-xs text-slate-500">
+                        <div class="flex justify-between font-bold text-slate-700 text-sm mb-2"><span>Net Premium:</span><span id="fr-net">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Fire Service Tax (2%):</span><span id="fr-fst" class="font-semibold text-orange-600">₱0.00</span></div>
+                        <div class="flex justify-between"><span>VAT (12%):</span><span id="fr-vat">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Doc Stamp Tax (12.5%):</span><span id="fr-dst">₱0.00</span></div>
+                        <div class="flex justify-between"><span>Local Gov Tax (0.2%):</span><span id="fr-lgt">₱0.00</span></div>
+                    </div>
 
-            <div id="result-box" class="hidden animate-fade bg-slate-50 p-5 rounded-2xl border-2 border-dashed border-slate-200">
-                <div class="space-y-3 text-sm">
-                    <div class="flex justify-between text-slate-600">
-                        <span>Labor Cost:</span>
-                        <span id="res-labor" class="font-bold">₱0.00</span>
+                    <div class="mt-4 bg-orange-50 text-orange-900 p-4 rounded-xl text-center border border-orange-200">
+                        <p class="text-[10px] uppercase font-bold tracking-widest mb-1 text-orange-700">Gross Premium (Total Due)</p>
+                        <h2 id="fr-total" class="text-2xl font-black">₱0.00</h2>
                     </div>
-                    <div class="flex justify-between text-slate-600">
-                        <span>Painting Cost:</span>
-                        <span id="res-paint" class="font-bold">₱0.00</span>
-                    </div>
-                    <div class="flex justify-between text-red-500 font-medium">
-                        <span>Less: Participation:</span>
-                        <span id="res-deductible">-₱0.00</span>
-                    </div>
-                    <div class="flex justify-between font-black text-xl text-slate-900 pt-3
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-6 text-[10px] text-slate-400 uppercase mb-10 print-full">
+            <p>Disclaimer: Figures are indicative estimates based on standard Philippine Insurance Commission (IC) tariff guidelines.</p>
+            <p>Subject to final underwriting approval by BDRS-Insurance partner providers.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Tab Switching Logic ---
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Reset all buttons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('border-blue-400', 'text-blue-100');
+                el.classList.add('border-transparent', 'text-blue-300');
+            });
+            // Activate selected
+            document.getElementById(tabId).classList.add('active');
+            let btnId = tabId.replace('tab-', 'btn-');
+            document.getElementById(btnId).classList.remove('border-transparent', 'text-blue-300');
+            document.getElementById(btnId).classList.add('border-blue-400', 'text-blue-100');
+        }
+
+        // Helper for formatting currency
+        const fmt = (num) => "₱" + num.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+        // --- 2. Claims Logic ---
+        function calcClaim() {
+            let h = parseFloat(document.getElementById('c-hours').value) || 0;
+            let p = parseFloat(document.getElementById('c-panels').value) || 0;
+            let pts = parseFloat(document.getElementById('c-parts').value) || 0;
+            let ded = parseFloat(document.getElementById('c-deduct').value) || 0;
+
+            let labor = h * 650;
+            let paint = p * 4500;
+            let total = (labor + paint + pts) - ded;
+
+            document.getElementById('cr-labor').innerText = fmt(labor);
+            document.getElementById('cr-paint').innerText = fmt(paint);
+            document.getElementById('cr-parts').innerText = fmt(pts);
+            document.getElementById('cr-deduct').innerText = "-" + fmt(ded);
+            document.getElementById('cr-total').innerText = fmt(total < 0 ? 0 : total);
+        }
+
+        // --- 3. Motor Quote Logic ---
+        function calcMotor() {
+            let fmv = parseFloat(document.getElementById('m-fmv').value) || 0;
+            let odRate = parseFloat(document.getElementById('m-od-rate').value) / 100 || 0.015;
+            let aonRate = parseFloat(document.getElementById('m-aon-rate').value) / 100 || 0.005;
+            let hasAon = document.getElementById('m-aon').checked;
+
+            let odPremium = fmv * odRate;
+            let aonPremium = hasAon ? (fmv * aonRate) : 0;
+            let vtplBi = 530;   // Standard baseline
+            let vtplPd = 1050;  // Standard baseline
+            let autoPa = 500;   // Standard baseline
+
+            let net = odPremium + aonPremium + vtplBi + vtplPd + autoPa;
+            let vat = net * 0.12;
+            let dst = net * 0.125;
+            let lgt = net * 0.002;
+            let gross = net + vat + dst + lgt;
+
+            document.getElementById('mr-od').innerText = fmt(odPremium);
+            document.getElementById('mr-aon').innerText = fmt(aonPremium);
+            document.getElementById('mr-net').innerText = fmt(net);
+            document.getElementById('mr-vat').innerText = fmt(vat);
+            document.getElementById('mr-dst').innerText = fmt(dst);
+            document.getElementById('mr-lgt').innerText = fmt(lgt);
+            document.getElementById('mr-total').innerText = fmt(gross);
+        }
+
+        // --- 4. Fire Quote Logic ---
+        function calcFire() {
+            let tsi = parseFloat(document.getElementById('f-tsi').value) || 0;
+            let baseRate = parseFloat(document.getElementById('f-rate').value) / 100;
+            
+            let hasEq = document.getElementById('f-eq').checked;
+            let hasTyfl = document.getElementById('f-tyfl').checked;
+            let hasRsm = document.getElementById('f-rsm').checked;
+
+            // Standard IC Tariff estimates for allied perils
+            let eqRate = baseRate >= 0.0025 ? 0.0015 : 0.0010; // slightly higher for wood
+            let tyflRate = 0.0010;
+            let rsmRate = 0.0001;
+
+            let firePrem = tsi * baseRate;
+            let eqPrem = hasEq ? (tsi * eqRate) : 0;
+            let tyflPrem = hasTyfl ? (tsi * tyflRate) : 0;
+            let rsmPrem = hasRsm ? (tsi * rsmRate) : 0;
+
+            let net = firePrem + eqPrem + tyflPrem + rsmPrem;
+            let fst = net * 0.02; // Fire Service Tax
+            let vat = net * 0.12;
+            let dst = net * 0.125;
+            let lgt = net * 0.002;
+            let gross = net + fst + vat + dst + lgt;
+
+            document.getElementById('fr-fire').innerText = fmt(firePrem);
+            document.getElementById('fr-eq').innerText = fmt(eqPrem);
+            document.getElementById('fr-tyfl').innerText = fmt(tyflPrem);
+            document.getElementById('fr-rsm').innerText = fmt(rsmPrem);
+            document.getElementById('fr-net').innerText = fmt(net);
+            document.getElementById('fr-fst').innerText = fmt(fst);
+            document.getElementById('fr-vat').innerText = fmt(vat);
+            document.getElementById('fr-dst').innerText = fmt(dst);
+            document.getElementById('fr-lgt').innerText = fmt(lgt);
+            document.getElementById('fr-total').innerText = fmt(gross);
+        }
+
+        // Initialize calculations on load
+        window.onload = () => {
+            calcClaim();
+            calcMotor();
+            calcFire();
+        };
+    </script>
+</body>
+</html>
