@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PH Insurance Repair Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow">
+        <h1 class="text-2xl font-bold mb-4 text-blue-600">PH Repair Claim Estimator</h1>
+        
+        <div class="mb-4">
+            <p class="text-sm text-gray-500">Current Market Labor Rate: <span id="display-rate">Loading...</span>/hr</p>
+        </div>
+
+        <label class="block mb-2">Repair Hours:</label>
+        <input type="number" id="hours" class="w-full border p-2 rounded mb-4" placeholder="e.g. 5">
+
+        <label class="block mb-2">Number of Panels to Paint:</label>
+        <input type="number" id="panels" class="w-full border p-2 rounded mb-4" placeholder="e.g. 2">
+
+        <button onclick="calculate()" class="w-full bg-blue-600 text-white p-2 rounded font-bold">Calculate Total Claim</button>
+
+        <div id="result" class="mt-6 p-4 bg-green-50 rounded hidden">
+            <h3 class="font-bold text-green-800">Estimated Total:</h3>
+            <p id="total-price" class="text-2xl font-black text-green-700">₱0.00</p>
+        </div>
+    </div>
+
+    <script>
+        let currentRates = {};
+
+        // Fetch the "Market" rates from your JSON file
+        async function fetchRates() {
+            const response = await fetch('rates.json');
+            currentRates = await response.json();
+            document.getElementById('display-rate').innerText = "₱" + currentRates.labor_per_hour;
+        }
+
+        function calculate() {
+            const hours = document.getElementById('hours').value;
+            const panels = document.getElementById('panels').value;
+            
+            const laborTotal = hours * currentRates.labor_per_hour;
+            const paintTotal = panels * currentRates.painting_per_panel;
+            const total = laborTotal + paintTotal;
+
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('total-price').innerText = "₱" + total.toLocaleString();
+        }
+
+        fetchRates();
+    </script>
+</body>
+</html>
