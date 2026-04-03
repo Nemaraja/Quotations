@@ -151,7 +151,6 @@
     </div>
 
     <script>
-        // TAB SWITCHER
         function showTab(type) {
             document.getElementById('motor-tab').classList.remove('active');
             document.getElementById('fire-tab').classList.remove('active');
@@ -168,16 +167,16 @@
             calculateAll();
         }
 
-        // NEW: FORMATTING FUNCTION FOR COMMAS
         function formatInput(el) {
-            // Remove all non-digits
-            let val = el.value.replace(/,/g, '');
+            // FIX: Remove all non-digits (letters/symbols) immediately
+            let val = el.value.replace(/\D/g, ''); 
+            
             if (val === "") {
                 el.value = "";
                 calculateAll();
                 return;
             }
-            // Add commas and update the field
+            // Format with commas
             el.value = Number(val).toLocaleString('en-US');
             calculateAll();
         }
@@ -185,9 +184,9 @@
         const format = (n) => "₱" + n.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
         function calculateAll() {
-            // MOTOR COMPUTATION
-            // STRIP COMMAS BEFORE CALCULATION
-            const fmv = parseFloat(document.getElementById('m-fmv').value.replace(/,/g, '')) || 0;
+            const fmvInput = document.getElementById('m-fmv').value.replace(/,/g, '');
+            const fmv = parseFloat(fmvInput) || 0;
+            
             const mOD = document.getElementById('m-od').checked ? fmv * 0.015 : 0;
             const mAON = document.getElementById('m-aon').checked ? fmv * 0.005 : 0;
             const mBI = document.getElementById('m-vtplbi').checked ? 530 : 0;
@@ -211,9 +210,9 @@
             document.getElementById('res-m-lgt').innerText = format(mLgt);
             document.getElementById('res-m-total').innerText = format(mTotal);
 
-            // FIRE COMPUTATION
-            // STRIP COMMAS BEFORE CALCULATION
-            const tsi = parseFloat(document.getElementById('f-tsi').value.replace(/,/g, '')) || 0;
+            const tsiInput = document.getElementById('f-tsi').value.replace(/,/g, '');
+            const tsi = parseFloat(tsiInput) || 0;
+            
             const fBase = tsi * parseFloat(document.getElementById('f-base-rate').value);
             const fEQ = document.getElementById('f-eq').checked ? tsi * 0.0015 : 0;
             const fTY = document.getElementById('f-ty').checked ? tsi * 0.0010 : 0;
