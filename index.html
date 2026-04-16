@@ -18,10 +18,13 @@
             body { background: white; padding: 0; color: #000; }
             .no-print { display: none !important; }
             .print-container { box-shadow: none !important; border: none !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; }
-            .bg-blue-900 { background-color: #1e3a8a !important; -webkit-print-color-adjust: exact; }
-            .bg-slate-900 { background-color: #0f172a !important; -webkit-print-color-adjust: exact; }
-            .print-header { display: flex !important; justify-content: space-between; border-bottom: 3px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 30px; }
-            .tab-content.active::after { content: "OFFICIAL QUOTATION"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 70px; color: rgba(0,0,0,0.03); font-weight: 900; z-index: -1; }
+            
+            /* Fixing Visibility: Force dark text on light background for print */
+            .bg-slate-900, .bg-orange-900 { background-color: transparent !important; border: 1px solid #cbd5e1 !important; color: black !important; }
+            .text-white, .text-slate-400, .text-blue-400, .text-orange-400 { color: black !important; }
+            span, h2, h3, p { color: black !important; }
+            
+            .print-header { display: flex !important; justify-content: space-between; border-bottom: 3px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 20px; }
         }
         
         .print-header { display: none; }
@@ -35,7 +38,7 @@
     <nav class="bg-blue-900 text-white sticky top-0 z-50 no-print shadow-lg">
         <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
             <span class="font-black text-xl tracking-tighter uppercase italic">Quote Calculator</span>
-            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-xs font-bold transition shadow-lg">PRINT QUOTATION</button>
+            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-xs font-bold transition">PRINT QUOTATION</button>
         </div>
         <div class="flex max-w-4xl mx-auto border-t border-blue-800">
             <button onclick="showTab('motor')" id="btn-motor" class="flex-1 py-4 text-xs font-black tracking-widest border-b-4 border-blue-400 bg-blue-800 text-white uppercase">🚗 Motorcar</button>
@@ -57,10 +60,6 @@
         </div>
 
         <div id="motor-tab" class="tab-content active bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-            <div class="bg-slate-100 p-4 border-b text-center no-print">
-                <h2 class="font-black text-sm uppercase text-slate-600">Computation Panel</h2>
-            </div>
-            
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="space-y-4 no-print">
                     <div>
@@ -75,11 +74,11 @@
                     <div class="bg-slate-50 p-4 rounded-2xl border space-y-3">
                         <p class="text-[10px] font-black text-blue-600 uppercase border-b pb-1">Select Perils & Tariff Rates</p>
                         <label class="flex justify-between items-center text-sm font-bold cursor-pointer">
-                            <span>Own Damage & Theft (<span id="lbl-od">1.50</span>%)</span>
+                            <span>Own Damage & Theft (1.50%)</span>
                             <input type="checkbox" id="m-od" checked onchange="calculateAll()" class="w-5 h-5 accent-blue-600">
                         </label>
                         <label class="flex justify-between items-center text-sm font-bold cursor-pointer">
-                            <span>Acts of Nature (<span id="lbl-aon">0.50</span>%)</span>
+                            <span>Acts of Nature (0.50%)</span>
                             <input type="checkbox" id="m-aon" checked onchange="calculateAll()" class="w-5 h-5 accent-blue-600">
                         </label>
                         <label class="flex justify-between items-center text-sm font-bold cursor-pointer">
@@ -98,38 +97,39 @@
                     
                     <div class="bg-slate-50 p-4 rounded-2xl border">
                         <p class="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Insurer Comparison</p>
-                        <div class="grid grid-cols-2 gap-2 text-[9px] font-black uppercase">
-                            <div class="insurer-card active p-3 rounded-xl m-card" onclick="selectInsurer(this, 'motor', 1.0)">IC TARIFF RATE</div>
-                            <div class="insurer-card p-3 rounded-xl m-card" onclick="selectInsurer(this, 'motor', 1.05)">PACIFIC CROSS</div>
-                            <div class="insurer-card p-3 rounded-xl m-card" onclick="selectInsurer(this, 'motor', 0.98)">PIONEER</div>
-                            <div class="insurer-card p-3 rounded-xl m-card" onclick="selectInsurer(this, 'motor', 1.03)">ASIA INSURANCE</div>
+                        <div class="grid grid-cols-3 gap-2 text-[8px] font-black uppercase">
+                            <div class="insurer-card active p-2 rounded-lg m-card" onclick="selectInsurer(this, 'motor', 1.0)">IC TARIFF</div>
+                            <div class="insurer-card p-2 rounded-lg m-card" onclick="selectInsurer(this, 'motor', 1.05)">PACIFIC CROSS</div>
+                            <div class="insurer-card p-2 rounded-lg m-card" onclick="selectInsurer(this, 'motor', 0.98)">PIONEER</div>
+                            <div class="insurer-card p-2 rounded-lg m-card" onclick="selectInsurer(this, 'motor', 1.02)">PARAMOUNT</div>
+                            <div class="insurer-card p-2 rounded-lg m-card" onclick="selectInsurer(this, 'motor', 1.04)">BETHEL</div>
+                            <div class="insurer-card p-2 rounded-lg m-card" onclick="selectInsurer(this, 'motor', 1.01)">MAAGAP</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-900 text-white p-8 rounded-[2rem] flex flex-col justify-between shadow-2xl relative overflow-hidden print:bg-white print:text-slate-900 print:border-2 print:shadow-none">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600 opacity-10 rounded-full -mr-16 -mt-16 no-print"></div>
+                <div class="bg-slate-900 text-white p-8 rounded-[2rem] flex flex-col justify-between shadow-2xl relative">
                     <div>
                         <div class="hidden print:block mb-6">
                             <p class="text-[10px] font-bold text-slate-400 uppercase">Description of Risk:</p>
-                            <p id="print-m-model" class="text-xl font-black text-blue-900 border-b-2 pb-2 uppercase tracking-tighter">---</p>
+                            <p id="print-m-model" class="text-xl font-black text-blue-900 border-b-2 pb-2 uppercase">---</p>
                         </div>
                         <h3 class="text-xs font-black text-blue-400 uppercase border-b border-slate-800 pb-4 mb-6 tracking-widest">Computation Summary</h3>
                         <div class="space-y-3 text-sm">
-                            <div class="flex justify-between text-slate-400 print:text-slate-500"><span>OD/Theft Premium:</span><span id="res-m-od" class="font-bold text-white print:text-slate-900">₱0.00</span></div>
-                            <div class="flex justify-between text-slate-400 print:text-slate-500"><span>Acts of Nature:</span><span id="res-m-aon" class="font-bold text-white print:text-slate-900">₱0.00</span></div>
-                            <div class="flex justify-between text-slate-400 print:text-slate-500"><span>Third Party (BI/PD):</span><span id="res-m-vtpl" class="font-bold text-white print:text-slate-900">₱0.00</span></div>
-                            <div class="flex justify-between text-slate-400 print:text-slate-500"><span>Personal Accident:</span><span id="res-m-pa" class="font-bold text-white print:text-slate-900">₱0.00</span></div>
+                            <div class="flex justify-between text-slate-400"><span>OD/Theft Premium:</span><span id="res-m-od" class="font-bold text-white">₱0.00</span></div>
+                            <div class="flex justify-between text-slate-400"><span>Acts of Nature:</span><span id="res-m-aon" class="font-bold text-white">₱0.00</span></div>
+                            <div class="flex justify-between text-slate-400"><span>Third Party (BI/PD):</span><span id="res-m-vtpl" class="font-bold text-white">₱0.00</span></div>
+                            <div class="flex justify-between text-slate-400"><span>Personal Accident:</span><span id="res-m-pa" class="font-bold text-white">₱0.00</span></div>
                             
                             <div class="pt-6 border-t border-slate-800 mt-4 space-y-2">
-                                <div class="flex justify-between font-black text-blue-100 print:text-slate-900"><span>NET PREMIUM:</span><span id="res-m-net">₱0.00</span></div>
+                                <div class="flex justify-between font-black text-blue-100"><span>NET PREMIUM:</span><span id="res-m-net">₱0.00</span></div>
                                 <div class="flex justify-between text-xs text-slate-500"><span>Estimated Taxes (24.7%):</span><span id="res-m-taxes">₱0.00</span></div>
                             </div>
                         </div>
                     </div>
                     <div class="mt-10 pt-6 border-t border-slate-800 text-center">
                         <p class="text-[10px] font-bold text-blue-400 uppercase mb-1 tracking-widest">Total Amount Due</p>
-                        <h2 id="res-m-total" class="text-5xl font-black tracking-tighter text-white print:text-blue-900">₱0.00</h2>
+                        <h2 id="res-m-total" class="text-5xl font-black tracking-tighter text-white">₱0.00</h2>
                     </div>
                 </div>
             </div>
@@ -146,7 +146,7 @@
                     <div class="bg-slate-50 p-4 rounded-2xl border space-y-3">
                         <p class="text-[10px] font-black text-orange-600 uppercase border-b pb-1">Property Coverages</p>
                         <select id="f-base" class="w-full border-2 p-3 rounded-xl font-bold text-sm bg-white" onchange="calculateAll()">
-                            <option value="0.0010">Class A Concrete (<span id="lbl-f-base">0.10</span>%)</option>
+                            <option value="0.0010">Class A Concrete (0.10%)</option>
                             <option value="0.0025">Semi-Concrete (0.25%)</option>
                             <option value="0.0050">Wood/Light Materials (0.50%)</option>
                         </select>
@@ -162,31 +162,39 @@
 
                     <div class="bg-slate-50 p-4 rounded-2xl border">
                         <p class="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Insurer Comparison</p>
-                        <div class="grid grid-cols-2 gap-2 text-[9px] font-black uppercase">
-                            <div class="insurer-card active p-3 rounded-xl f-card" onclick="selectInsurer(this, 'fire', 1.0)">IC TARIFF RATE</div>
-                            <div class="insurer-card p-3 rounded-xl f-card" onclick="selectInsurer(this, 'fire', 1.10)">PACIFIC CROSS</div>
-                            <div class="insurer-card p-3 rounded-xl f-card" onclick="selectInsurer(this, 'fire', 0.95)">PIONEER</div>
+                        <div class="grid grid-cols-3 gap-2 text-[8px] font-black uppercase">
+                            <div class="insurer-card active p-2 rounded-lg f-card" onclick="selectInsurer(this, 'fire', 1.0)">IC TARIFF</div>
+                            <div class="insurer-card p-2 rounded-lg f-card" onclick="selectInsurer(this, 'fire', 1.10)">PACIFIC CROSS</div>
+                            <div class="insurer-card p-2 rounded-lg f-card" onclick="selectInsurer(this, 'fire', 0.95)">PIONEER</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-orange-900 text-white p-8 rounded-[2rem] flex flex-col justify-between shadow-2xl print:bg-white print:text-slate-900 print:border-2 print:shadow-none">
+                <div class="bg-orange-900 text-white p-8 rounded-[2rem] flex flex-col justify-between shadow-2xl">
                     <div>
                         <h3 class="text-xs font-black text-orange-400 uppercase border-b border-orange-800 pb-4 mb-6 tracking-widest">Property Summary</h3>
                         <div class="space-y-3 text-sm">
-                            <div class="flex justify-between text-orange-200 print:text-slate-500"><span>Fire Net Premium:</span><span id="res-f-net" class="font-bold text-white print:text-slate-900">₱0.00</span></div>
-                            <div class="flex justify-between text-orange-300 print:text-slate-400"><span>Taxes (26.7%):</span><span id="res-f-taxes" class="font-bold">₱0.00</span></div>
+                            <div class="flex justify-between text-orange-200"><span>Fire Net Premium:</span><span id="res-f-net" class="font-bold text-white">₱0.00</span></div>
+                            <div class="flex justify-between text-orange-300"><span>Taxes (26.7%):</span><span id="res-f-taxes" class="font-bold text-white">₱0.00</span></div>
                         </div>
                     </div>
                     <div class="mt-10 pt-6 border-t border-orange-800 text-center">
                         <p class="text-[10px] font-bold text-orange-300 uppercase mb-1 tracking-widest">Total Amount Due</p>
-                        <h2 id="res-f-total" class="text-5xl font-black tracking-tighter text-white print:text-orange-900">₱0.00</h2>
+                        <h2 id="res-f-total" class="text-5xl font-black tracking-tighter text-white">₱0.00</h2>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="text-center mt-10 text-[10px] text-slate-400 uppercase font-bold tracking-widest">
+        <div class="mt-8 p-4 bg-slate-100 rounded-xl border border-slate-200 text-center">
+            <p class="text-[10px] font-bold text-slate-600 leading-relaxed uppercase tracking-tighter">
+                ⚠️ WARNING: This quotation is based purely on IC Tariff standards and LTO requirements. 
+                This document provides a general overview and is NOT an official policy or binding contract. 
+                Rates are subject to final underwriting approval.
+            </p>
+        </div>
+
+        <div class="text-center mt-6 text-[10px] text-slate-400 uppercase font-bold tracking-widest">
             <p>Generated by Quote Calculator • 2026</p>
         </div>
     </div>
@@ -212,32 +220,23 @@
             const cardClass = type === 'motor' ? '.m-card' : '.f-card';
             document.querySelectorAll(cardClass).forEach(c => c.classList.remove('active'));
             el.classList.add('active');
-            
-            if(type === 'motor') {
-                motorRate = rate;
-                document.getElementById('lbl-od').innerText = (1.50 * rate).toFixed(2);
-                document.getElementById('lbl-aon').innerText = (0.50 * rate).toFixed(2);
-            } else {
-                fireRate = rate;
-                document.getElementById('lbl-f-base').innerText = (0.10 * rate).toFixed(2);
-            }
+            if(type === 'motor') motorRate = rate; else fireRate = rate;
             calculateAll();
         }
 
         const format = (n) => "₱" + n.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
         function calculateAll() {
-            // MOTOR CALCS
             document.getElementById('print-m-model').innerText = document.getElementById('m-model').value || "Not Specified";
             const fmv = parseFloat(document.getElementById('m-fmv').value.replace(/,/g, '')) || 0;
             
+            // MOTOR
             const mOD = document.getElementById('m-od').checked ? (fmv * 0.015) : 0;
             const mAON = document.getElementById('m-aon').checked ? (fmv * 0.005) : 0;
             const mVTPL = (document.getElementById('m-vtplbi').checked ? 530 : 0) + (document.getElementById('m-vtplpd').checked ? 1050 : 0);
             const mPA = document.getElementById('m-pa').checked ? 500 : 0;
-
             const mNet = (mOD + mAON + mVTPL + mPA) * motorRate;
-            const mTaxes = mNet * 0.247; // 24.7% standard motor tax
+            const mTaxes = mNet * 0.247;
             
             document.getElementById('res-m-od').innerText = format(mOD * motorRate);
             document.getElementById('res-m-aon').innerText = format(mAON * motorRate);
@@ -247,18 +246,14 @@
             document.getElementById('res-m-taxes').innerText = format(mTaxes);
             document.getElementById('res-m-total').innerText = format(mNet + mTaxes);
 
-            // FIRE CALCS
+            // FIRE
             const tsi = parseFloat(document.getElementById('f-tsi').value.replace(/,/g, '')) || 0;
-            const fBaseRate = parseFloat(document.getElementById('f-base').value);
-            const fEQ = document.getElementById('f-eq').checked ? 0.0015 : 0;
-            const fTY = document.getElementById('f-ty').checked ? 0.0010 : 0;
-
-            const fNet = (tsi * (fBaseRate + fEQ + fTY)) * fireRate;
-            const fTaxes = fNet * 0.267; // 26.7% standard fire tax
-            
+            const fNet = (tsi * (parseFloat(document.getElementById('f-base').value) + 
+                         (document.getElementById('f-eq').checked ? 0.0015 : 0) + 
+                         (document.getElementById('f-ty').checked ? 0.0010 : 0))) * fireRate;
             document.getElementById('res-f-net').innerText = format(fNet);
-            document.getElementById('res-f-taxes').innerText = format(fTaxes);
-            document.getElementById('res-f-total').innerText = format(fNet + fTaxes);
+            document.getElementById('res-f-taxes').innerText = format(fNet * 0.267);
+            document.getElementById('res-f-total').innerText = format(fNet * 1.267);
         }
 
         window.onload = calculateAll;
